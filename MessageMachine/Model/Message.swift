@@ -12,4 +12,5 @@ struct Message {
     let date: Double
     let body: String
     let receiver: String
+    let category: Int
 }

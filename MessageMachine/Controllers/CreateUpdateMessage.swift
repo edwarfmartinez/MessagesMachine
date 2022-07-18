@@ -12,42 +12,42 @@ import Firebase
 
 
 class CreateUpdateMessage: UIViewController {
-    
-    var messageConfiguration = MessageConfiguration()
-    
+
+    //MARK: Outlets (Properties)
+
     @IBOutlet weak var categoryPicker: UIPickerView!
     @IBOutlet weak var frequencySlider: UISlider!    
     @IBOutlet weak var frequencyValue: UILabel!
-    @IBOutlet weak var tagListView: TagListView!
+    @IBOutlet weak var tagListViewReceivers: TagListView!
     @IBOutlet weak var messageTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var messageValidator: UILabel!
     @IBOutlet weak var messageCounter: UILabel!
-    @IBOutlet weak var emailValidator: UILabel!
+    @IBOutlet weak var receiverValidator: UILabel!
     @IBOutlet weak var btnAddReceiver: UIButton!
     @IBOutlet weak var emailCounter: UILabel!
     
+    var messagesMachineManager = MessagesMachineManager()
+    var messagesConfiguration = MessageConfiguration()
+
     override func viewDidLoad() {
         
         categoryPicker.delegate = self
         categoryPicker.dataSource = self
-        tagListView.delegate = self
+        tagListViewReceivers.delegate = self
         messageTextField.delegate = self
         emailTextField.delegate = self
         
-//        messageCounter.text = ""
-//        emailCounter.text =  ""
-//        emailValidator.text = ""
-//        messageValidator.text = ""
-        
-        categoryPicker.selectRow(messageConfiguration.category, inComponent: 0, animated: true)
-        frequencySlider.value = Float(messageConfiguration.frequency)
-        frequencyValue.text = String(messageConfiguration.frequency)
-        messageConfiguration.sendTo.map({tagListView.addTag($0)})
-        messageTextField.text = messageConfiguration.message
+        categoryPicker.selectRow(messagesConfiguration.category, inComponent: 0, animated: true)
+        frequencySlider.value = Float(messagesConfiguration.frequency)
+        frequencyValue.text = String(messagesConfiguration.frequency)
+        messagesConfiguration.sendTo.map({tagListViewReceivers.addTag($0)})
+        messageTextField.text = messagesConfiguration.body
         btnAddReceiver.isEnabled = false
         
     }
+    
+    //MARK: IBActions
     
     @IBAction func messageChanged(_ sender: UITextField) {
         messageValidator.text = messageTextField.text == "" ? K.errorMsgEmptyField : ""
@@ -55,98 +55,85 @@ class CreateUpdateMessage: UIViewController {
     }
     
     @IBAction func emailChanged(_ sender: UITextField) {
-        emailValidator.text = !isValidEmail(emailTextField.text!) ? K.errorMsgInvalidEmail : ""
+        receiverValidator.text = !isValidEmail(emailTextField.text!) ? K.errorMsgInvalidEmail : ""
         emailCounter.text = String(K.textFieldLength - emailTextField.text!.count)
         btnAddReceiver.isEnabled = isValidEmail(emailTextField.text!)
     }
     
     @IBAction func addReceiver(_ sender: UIButton) {
         
-        // If max amount of tasks reached: Exit function and show error
-        guard tagListView.tagViews.count < K.maxNumberOfReceivers  else {
-            return emailValidator.text = K.errorMsgMaxNumberOfReceivers
+        // If add repeated e-mail: Exit function and show error
+        let currentTags = tagListViewReceivers.tagViews.map({$0.currentTitle!})
+        guard !currentTags.contains(emailTextField.text!) else {
+            return receiverValidator.text = K.errorMsgRepeatedReceiver
         }
         
-        // If add repeated e-mail: Exit function and show error
-        let currentTags = tagListView.tagViews.map({$0.currentTitle!})
-        guard !currentTags.contains(emailTextField.text!) else {
-            return emailValidator.text = K.errorMsgRepeatedReceiver
+        // If max amount of receivers reached: Exit function and show error
+        guard tagListViewReceivers.tagViews.count < K.maxNumberOfReceivers  else {
+            return receiverValidator.text = K.errorMsgMaxNumberOfReceivers
         }
         
         // If no errors: Add tag
-        tagListView.addTag(emailTextField.text!)
+        tagListViewReceivers.addTag(emailTextField.text!)
         emailTextField.text = ""
         emailCounter.text = ""
-        emailValidator.text = ""
+        receiverValidator.text = ""
         btnAddReceiver.isEnabled = false
     }
     
     @IBAction func frequencySliderChanged(_ sender: UISlider) {
         
         frequencyValue.text = "\(Int(frequencySlider.value))"
+        messagesConfiguration.frequency = Int(frequencySlider.value)
     }
     
     @IBAction func saveButtonTouch(_ sender: UIButton) {
         
-        if tagListView.tagViews.count > 0 && messageTextField.text != "" {
-            let db = Firestore.firestore()
-            //Add document configuration to collection when button pressed
-            if let messageOwner = Auth.auth().currentUser?.email {
-                
-                db.collection(K.FStore.MessageConfiguration.collectionName).document(messageConfiguration.docId == "" ? generateDocId : messageConfiguration.docId).setData([
-                    K.FStore.MessageConfiguration.ownerField: messageOwner,
-                    K.FStore.MessageConfiguration.categoryField: messageConfiguration.category,//Int(selectedCategory),
-                    K.FStore.MessageConfiguration.frequencyField: Int(frequencyValue.text!)!,
-                    K.FStore.MessageConfiguration.messageField: messageTextField.text!,
-                    K.FStore.MessageConfiguration.dateField: Date().timeIntervalSince1970,
-                    K.FStore.MessageConfiguration.sendToField: tagListView.tagViews.map({$0.currentTitle!})
-                ])
-                { (error) in
-                    if let e = error{
-                        print("\(K.errorMsgSavingData)\(e.localizedDescription)")
-                    } //else {
-                    //  print("Saved succesfully")
-                    //                        DispatchQueue.main.async {
-                    //                            self.messageTextfield.text=""
-                    //                        }
-                    //}
-                }
-            }
-            super.navigationController?.popToRootViewController(animated: true)
-        }
-        else {
-            emailValidator.text = tagListView.tagViews.count > 0 ? "" : K.errorMsgMinNumberOfReceivers
-            messageValidator.text = messageTextField.text == "" ? K.errorMsgEmptyField : ""
-            
+        guard messageTextField.text != "" else {
+            messageValidator.text = K.errorMsgEmptyField
+            return
         }
         
-    }
-    
-    func isValidEmail(_ email: String) -> Bool {
-        let emailRegEx = K.emailRegExpression
-        let emailPred = NSPredicate(format: K.emailFormat, emailRegEx)
-        return emailPred.evaluate(with: email)
-    }
-    
-    
-    var generateDocId: String {
-        get {
-            return String((0..<K.docIdLength).map{_ in K.alphaNumericValues.randomElement()!})
+        guard tagListViewReceivers.tagViews.count > 0 else {
+            receiverValidator.text = K.errorMsgMinNumberOfReceivers
+            return
+        }
+        
+        messagesConfiguration.body = messageTextField.text!
+        messagesConfiguration.sendTo = tagListViewReceivers.tagViews.map({$0.currentTitle!})
+        
+        //Add document configuration to collection when button pressed
+        if (Auth.auth().currentUser?.email) != nil {
+            messagesMachineManager.messageConfigCreateUpdate(message: messagesConfiguration)
+            //messagesMachineManager.stopSpecificTimer(timerId: messagesConfiguration.docId)
+            super.navigationController?.popToRootViewController(animated: true)
         }
     }
 }
 
+//MARK: Email validation
 
-//MARK: TagListViewDelegate
+func isValidEmail(_ email: String) -> Bool {
+    let emailRegEx = K.emailRegExpression
+    let emailPred = NSPredicate(format: K.emailFormat, emailRegEx)
+    return emailPred.evaluate(with: email)
+}
+
+//MARK: Id generation
+
+var generateDocId: String {
+    get {
+        return String((0..<K.docIdLength).map{_ in K.alphaNumericValues.randomElement()!})
+    }
+}
+
+//MARK: Delegates
 
 extension CreateUpdateMessage: TagListViewDelegate{
     func tagRemoveButtonPressed(_ title: String, tagView: TagView, sender: TagListView) {
         sender.removeTagView(tagView)
     }
 }
-
-
-//MARK: UIPickerViewDelegate
 
 extension CreateUpdateMessage: UIPickerViewDelegate, UIPickerViewDataSource {
     
@@ -173,12 +160,11 @@ extension CreateUpdateMessage: UIPickerViewDelegate, UIPickerViewDataSource {
     
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        messageConfiguration.category = row
+        messagesConfiguration.category = row
     }
     
 }
 
-//MARK: UITextFieldDelegate
 extension CreateUpdateMessage: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {

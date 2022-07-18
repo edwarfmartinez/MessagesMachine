@@ -9,131 +9,119 @@ import UIKit
 import Firebase
 import SwipeCellKit
 
-class MessageConfigurationController: UIViewController {
-    @IBOutlet weak var tableView: UITableView!
-    //unwind segue for logouts across the app
-    @IBAction func unwindSegue(_ sender: UIStoryboardSegue){}
+class MessageConfigurationController: NavigationBarController, NavigationBarDelegate {
     
+    @IBOutlet weak var tableView: UITableView!
     let db = Firestore.firestore()
-    var messageConfiguration : [MessageConfiguration] = []
-    let formatter = DateFormatter()
     
     override func viewDidLoad(){
         
+        print("MessageConfigurationController - viewDidLoad")
         super.viewDidLoad()
         tableView.dataSource = self
         tableView.delegate = self
-        title = K.appMessageConfigurationTitle
+        messagesMachineManager.messageConfigurationDelegate = self
+        navigationBarDelegate = self
         
+        //title = K.tabMessageConfigTitle
+        formatter.dateFormat = K.dateFormat
         
         navigationItem.hidesBackButton = true
-        tableView.register(UINib(nibName: K.cellNibNameMessageConfiguration, bundle: nil), forCellReuseIdentifier: K.cellIdentifier)
+        tableView.register(UINib(nibName: K.cellNibNameMessage, bundle: nil), forCellReuseIdentifier: K.cellIdentifier)
         
-        loadMessages()
+        messagesMachineManager.messageConfigurationRead()
+        
+        //searchButtons = [K.searchButtons.receiver, K.searchButtons.date, K.searchButtons.category]
+        initSearchController(showSenderFilter: false)
+
+        
+        
     }
     
-    func loadMessages(){
-        
-        // Query to Firebase collection
-        db.collection(K.FStore.MessageConfiguration.collectionName).order(by: K.FStore.Messages.dateField).addSnapshotListener() { (querySnapshot, err) in
-            self.messageConfiguration = [] // Save all messages in this variable
-            if let err = err {
-                print("\(K.errorMsgGetDocument)\(err)")
-            } else {
-                if let snapshotDocuments = querySnapshot?.documents{
-                    for doc in snapshotDocuments{
-                        let data = doc.data()
-                        if (data[K.FStore.MessageConfiguration.ownerField] as! String) == Auth.auth().currentUser?.email { // Show owner's messages only
-                            
-                            if let messageConfCategory = data[K.FStore.MessageConfiguration.categoryField] as? Int,
-                               //let messageConfDocId = data[K.FStore.MessageConfiguration.docIdField] as? String?,
-                               let messageConfFrequency = data[K.FStore.MessageConfiguration.frequencyField] as? Int,
-                               let messageConfMessage = data[K.FStore.MessageConfiguration.messageField] as? String,
-                               let messageConfSendTo = data[K.FStore.MessageConfiguration.sendToField] as? [String],
-                               let messageConfDate = data[K.FStore.MessageConfiguration.dateField] as? Double
-                            {
-                                let newMessageConfiguration = MessageConfiguration(docId: doc.documentID, category: messageConfCategory, frequency: messageConfFrequency, message: messageConfMessage, sendTo: messageConfSendTo, date: messageConfDate)
-                                self.messageConfiguration.append(newMessageConfiguration)
-                                
-                                DispatchQueue.main.async {
-                                    self.tableView.reloadData()
-                                    //Fix the scroll for messages
-                                    let indexPath =  IndexPath(row: self.messageConfiguration.count-1, section: 0)
-                                    self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    
-    
+    //MARK: Delete Message Configuration
     func deleteMessage(_ docId: String){
-        messageConfiguration.removeAll{ $0.docId == docId }
-        db.collection(K.FStore.MessageConfiguration.collectionName).document(docId).delete() { err in
-            if let err = err {
-                print("\(K.errorMsgDeletingData)\(err)")
-            } else {
-                print(K.successMsgDeletingData)
-            }
+        print("MessageConfigurationController - deleteMessage")
+
+        messagesConf.removeAll{ $0.docId == docId }
+        self.messagesMachineManager.messageConfigDelete(docId: docId)
+        self.messagesMachineManager.messageConfigurationRead()
+    }
+    
+    //MARK: Segues
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        print("MessageConfigurationController - prepare")
+
+        guard segue.identifier != nil else {
+            messagesMachineManager.stopAllTimers()
+            return
+        }
+        let destinationVC = segue.destination as! CreateUpdateMessage
+        if let indexPath = tableView.indexPathForSelectedRow  {
+            destinationVC.messagesConfiguration = messagesConf[indexPath.row]
         }
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        let destinationVC = segue.destination as! CreateUpdateMessage
-        if let indexPath = tableView.indexPathForSelectedRow{
-            destinationVC.messageConfiguration = messageConfiguration[indexPath.row]
-        }
-    }
+    //MARK: TableView functions
     
     func numberOfSections(in tableView: UITableView) -> Int {
+        print("MessageConfigurationController - numberOfSections")
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return messageConfiguration.count
-    }
+        print("MessageConfigurationController - numberOfRowsInSection")
+        if(searchController.isActive) {
+            return filteredMessagesConf.count
+        }
+        return messagesConf.count    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        print("MessageConfigurationController - cellForRowAt")
+
+        let cell = tableView.dequeueReusableCell(withIdentifier: K.cellIdentifier, for: indexPath) as! MessageCell
+        let message: MessageConfiguration! = searchController.isActive ? filteredMessagesConf[indexPath.row] : messagesConf[indexPath.row]
+        let nsDate = NSDate(timeIntervalSince1970: TimeInterval(message.date))
+        let dateString = formatter.string(from: nsDate as Date)
         
-        let message = messageConfiguration[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: K.cellIdentifier, for: indexPath) as! MessageConfigurationCell
         cell.delegate = self
-        cell.lblCategory.text = K.FStore.MessageConfiguration.categories[message.category]
-        cell.lblMessage.text = message.message
-        cell.lblFrequency.text = String(message.frequency)
-        cell.lblSendTo.text = message.sendTo.joined(separator: K.sendToSeparator)
+        cell.category.text = K.FStore.MessageConfiguration.categories[message.category]
+        cell.message.text = message.body
+        cell.frequency.text = String(message.frequency)
+        cell.receiver.text = message.sendTo.joined(separator: K.sendToSeparator)
+        cell.date.text = dateString
+        
+        cell.senderView.isHidden=true
+        cell.receiverView.isHidden=false
+        cell.dateView.isHidden=false
+        cell.messageView.isHidden=false
+        cell.frequencyView.isHidden=false
+        cell.categoryView.isHidden=false
+
         return cell
         
     }
-}
-
-
-
-//MARK: UITableViewDelegate
-
-extension MessageConfigurationController: UITableViewDataSource, UITableViewDelegate{
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            performSegue(withIdentifier: K.Segues.messageConfigurationDetail, sender: self)
-            tableView.deselectRow(at: indexPath, animated: true)
+    //MARK: Filter functions
+    func didUpdateFilter(_ navigationBarController: NavigationBarController) {
+        print("MessageConfigurationController - didUpdateFilter")
+
+        tableView.reloadData()
     }
 }
 
-//MARK: SwipeTableViewCellDelegate
+//MARK: Delegates
 
 extension MessageConfigurationController: SwipeTableViewCellDelegate{
-   
+    
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
-        guard orientation == .right else { return nil }
+       
+        print("MessageConfigurationController - editActionsForRowAt")
 
+        guard orientation == .right else { return nil }
+        
         let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
             // handle action by updating model with deletion
-            self.deleteMessage(self.messageConfiguration[indexPath.row].docId)
+            self.deleteMessage(self.messagesConf[indexPath.row].docId)
         }
         // customize the action appearance
         deleteAction.image = UIImage(named: K.cellSwipeDeleteIcon)
@@ -142,10 +130,43 @@ extension MessageConfigurationController: SwipeTableViewCellDelegate{
     
     
     func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
+        
+        print("MessageConfigurationController - editActionsOptionsForRowAt")
+
+        
         var options = SwipeOptions()
         options.expansionStyle = .destructive
         options.transitionStyle = .border
         return options
     }
+}
+
+extension MessageConfigurationController:MessageConfigurationDelegate{
+    func didUpdateMessages(_ messagesMachineManager: MessagesMachineManager, messages: [MessageConfiguration]) {
+        
+        print("MessageConfigurationController - MessageConfigurationDelegate")
+        DispatchQueue.main.async {
+            
+            self.messagesConf = messages
+            self.tableView.reloadData()
+            //Fix the scroll for messages
+            let numRows = self.searchController.isActive ? self.filteredMessagesConf.count : self.messagesConf.count
+            
+            if numRows > 0 {
+                print("Scroll to reach the end of tableview")
+                let indexPath =  IndexPath(row: numRows-1, section: 0)
+                self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+            }
+        }
+    }
+}
+
+extension MessageConfigurationController: UITableViewDataSource, UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("MessageConfigurationController - didSelectRowAt")
+
+        performSegue(withIdentifier: K.Segues.messageConfigurationDetail, sender: self)
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
 }
