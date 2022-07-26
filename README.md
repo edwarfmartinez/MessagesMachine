@@ -1,4 +1,4 @@
-# Messagesmachine
+# Messages Machine
 
 iOS app for automated messaging. Program your automated messages including sending frequency time and receiver users, and the messages machine will do the job.
 
