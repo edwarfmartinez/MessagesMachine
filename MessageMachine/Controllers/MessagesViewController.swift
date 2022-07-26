@@ -8,23 +8,29 @@
 import UIKit
 import Firebase
 
-class InboxController: NavigationBarController {
+class MessagesViewController: NavigationBarController, NavigationBarDelegate {
+    
+    func didUpdateFilter(_ navigationBarController: NavigationBarController) {
+        print("MessageConfigurationController - didUpdateFilter")
+        tableView.reloadData()
+    }
+    
 
     @IBOutlet weak var tableView: UITableView!
     
-    
+    var showSenderFilter = true
     
     @IBAction func inboxTouch(_ sender: UIButton) {
-        //searchButtons = [K.searchButtons.sender, K.searchButtons.date, K.searchButtons.category]
-
+        showSenderFilter = true
         messagesMachineManager.messagesRead(fromInbox:true, fromCharts: false)
-        initSearchController(showSenderFilter: true)
+        initSearchController(showSenderFilter: showSenderFilter)
+
     }
+    
     @IBAction func sentTouch(_ sender: UIButton) {
-        //searchButtons = [K.searchButtons.receiver, K.searchButtons.date, K.searchButtons.category]
-        //messagesMachineManager.flagInbox=false
+        showSenderFilter = false
         messagesMachineManager.messagesRead(fromInbox:false, fromCharts: false)
-        initSearchController(showSenderFilter: true)
+        initSearchController(showSenderFilter: showSenderFilter)
     }
     
     
@@ -35,19 +41,25 @@ class InboxController: NavigationBarController {
         messagesMachineManager.messageConfigurationDelegate = self
         navigationBarDelegate = self
         tableView.dataSource = self
-        //title = K.tabMessagesTitle
-        //tabMessages.title=""
         formatter.dateFormat = K.dateFormat
         navigationItem.hidesBackButton = true
         tableView.register(UINib(nibName: K.cellNibNameMessage, bundle: nil), forCellReuseIdentifier: K.cellIdentifier)
     
         messagesMachineManager.messageConfigurationRead()
         messagesMachineManager.messagesRead(fromInbox: true, fromCharts: false)
+        callFromMessageConfiguration = false
         initSearchController(showSenderFilter: true)
+        
+        self.view.isAccessibilityElement = true
+        tableView.accessibilityIdentifier = "MessagesTableView"
+
 
     }
     
     
+//    override func viewWillAppear(_ animated: Bool) {
+//
+//    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
@@ -64,12 +76,8 @@ class InboxController: NavigationBarController {
         cell.message.text = message.body
         cell.category.text = K.FStore.MessageConfiguration.categories[message.category]
         
-//        cell.senderView.isHidden = !messagesMachineManager.flagInbox
-//        cell.receiverView.isHidden = messagesMachineManager.flagInbox
-        
-        cell.senderView.isHidden = false
-        cell.receiverView.isHidden = true
-        
+        cell.senderView.isHidden = !showSenderFilter
+        cell.receiverView.isHidden = showSenderFilter
         
         return cell
     }
@@ -78,9 +86,16 @@ class InboxController: NavigationBarController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         messagesMachineManager.stopAllTimers()
     }
+    
+    
+    
+    
 }
 
-extension InboxController: UITableViewDataSource{
+
+
+
+extension MessagesViewController: UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if(searchController.isActive) {
@@ -92,13 +107,9 @@ extension InboxController: UITableViewDataSource{
 
 // MARK: Delegates
 
-extension InboxController : NavigationBarDelegate{
-    func didUpdateFilter(_ navigationBarController: NavigationBarController) {
-        tableView.reloadData()
-    }
-}
 
-extension InboxController : MessageConfigurationDelegate{
+
+extension MessagesViewController : MessageConfigurationDelegate{
     func didUpdateMessages(_ messagesMachineManager: MessagesMachineManager, messages: [MessageConfiguration]) {
         messagesConf = messages
         messagesMachineManager.setTimers(messages: messagesConf)
@@ -106,7 +117,7 @@ extension InboxController : MessageConfigurationDelegate{
     }
 }
 
-extension InboxController: MessagesDelegate{
+extension MessagesViewController: MessagesDelegate{
     func didUpdateMessages(_ messagesMachineManager: MessagesMachineManager, messages: [Message]) {
         self.messages = messages
         print("MessagesDelegate - num of messages: \(messagesMachineManager.messages.count)")
@@ -120,6 +131,7 @@ extension InboxController: MessagesDelegate{
                 print("Going to scroll tableview to row \(numRows)")
                 let indexPath =  IndexPath(row: numRows-1, section: 0)
                 self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                
             }
         }
     }

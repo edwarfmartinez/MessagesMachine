@@ -45,7 +45,18 @@ class CreateUpdateMessage: UIViewController {
         messageTextField.text = messagesConfiguration.body
         btnAddReceiver.isEnabled = false
         
+        
+        messageTextField.accessibilityIdentifier = "messageTextField"
+        emailTextField.accessibilityIdentifier = "emailTextField"
+        btnAddReceiver.accessibilityIdentifier = "btnAddReceiver"
+
+        
+        
+        
+
     }
+    
+    
     
     //MARK: IBActions
     
@@ -104,14 +115,14 @@ class CreateUpdateMessage: UIViewController {
         
         //Add document configuration to collection when button pressed
         if (Auth.auth().currentUser?.email) != nil {
-            messagesMachineManager.messageConfigCreateUpdate(message: messagesConfiguration)
+            messagesMachineManager.messageConfigurationCreateUpdate(message: messagesConfiguration)
             //messagesMachineManager.stopSpecificTimer(timerId: messagesConfiguration.docId)
             super.navigationController?.popToRootViewController(animated: true)
         }
     }
 }
 
-//MARK: Email validation
+//Email validation
 
 func isValidEmail(_ email: String) -> Bool {
     let emailRegEx = K.emailRegExpression
@@ -119,7 +130,7 @@ func isValidEmail(_ email: String) -> Bool {
     return emailPred.evaluate(with: email)
 }
 
-//MARK: Id generation
+//Id generation
 
 var generateDocId: String {
     get {

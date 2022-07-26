@@ -7,11 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E07E66B2889B588005C227C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9DB38B284A5037002868E4 /* Constants.swift */; };
+		4E07E66E2889B58E005C227C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9DB38B284A5037002868E4 /* Constants.swift */; };
 		4E09A7172857811200C91B82 /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E09A7152857811200C91B82 /* MessageCell.swift */; };
 		4E09A7182857811200C91B82 /* MessageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4E09A7162857811200C91B82 /* MessageCell.xib */; };
 		4E2190A3287F1BEB0038E871 /* Timers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2190A2287F1BEB0038E871 /* Timers.swift */; };
 		4E29B8F02882036300768D2B /* PieChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E29B8EF2882036300768D2B /* PieChartViewController.swift */; };
-		4E29B8FC2882068B00768D2B /* DemoBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E29B8FB2882068B00768D2B /* DemoBaseViewController.swift */; };
 		4E35AF8B286E9C3A000B4613 /* NavigationBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E35AF8A286E9C3A000B4613 /* NavigationBarController.swift */; };
 		4E5115ED2854507E0061988B /* MessageConfigurationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5115EC2854507E0061988B /* MessageConfigurationController.swift */; };
 		4E5D68EA284FAD94001791D3 /* CreateUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5D68E9284FAD94001791D3 /* CreateUpdateMessage.swift */; };
@@ -28,7 +29,7 @@
 		4E9DB375284A3B97002868E4 /* MessageMachineUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9DB374284A3B97002868E4 /* MessageMachineUITests.swift */; };
 		4E9DB387284A4F6D002868E4 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9DB386284A4F6D002868E4 /* WelcomeViewController.swift */; };
 		4E9DB38C284A5037002868E4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9DB38B284A5037002868E4 /* Constants.swift */; };
-		4E9DB397284A5C1F002868E4 /* InboxController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9DB394284A5C1E002868E4 /* InboxController.swift */; };
+		4E9DB397284A5C1F002868E4 /* MessagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9DB394284A5C1E002868E4 /* MessagesViewController.swift */; };
 		4E9DB398284A5C1F002868E4 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9DB395284A5C1F002868E4 /* RegisterViewController.swift */; };
 		4E9DB399284A5C1F002868E4 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9DB396284A5C1F002868E4 /* LoginViewController.swift */; };
 		4E9DB3BF284A6701002868E4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4E9DB3BE284A6701002868E4 /* GoogleService-Info.plist */; };
@@ -88,7 +89,6 @@
 		4E09A7162857811200C91B82 /* MessageCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageCell.xib; sourceTree = "<group>"; };
 		4E2190A2287F1BEB0038E871 /* Timers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timers.swift; sourceTree = "<group>"; };
 		4E29B8EF2882036300768D2B /* PieChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartViewController.swift; sourceTree = "<group>"; };
-		4E29B8FB2882068B00768D2B /* DemoBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoBaseViewController.swift; sourceTree = "<group>"; };
 		4E35AF8A286E9C3A000B4613 /* NavigationBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarController.swift; sourceTree = "<group>"; };
 		4E5115EC2854507E0061988B /* MessageConfigurationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageConfigurationController.swift; sourceTree = "<group>"; };
 		4E5D68E9284FAD94001791D3 /* CreateUpdateMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUpdateMessage.swift; sourceTree = "<group>"; };
@@ -112,7 +112,7 @@
 		4E9DB376284A3B97002868E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4E9DB386284A4F6D002868E4 /* WelcomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		4E9DB38B284A5037002868E4 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		4E9DB394284A5C1E002868E4 /* InboxController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InboxController.swift; sourceTree = "<group>"; };
+		4E9DB394284A5C1E002868E4 /* MessagesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesViewController.swift; sourceTree = "<group>"; };
 		4E9DB395284A5C1F002868E4 /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		4E9DB396284A5C1F002868E4 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		4E9DB3BE284A6701002868E4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -223,7 +223,7 @@
 		4E9DB385284A4F2A002868E4 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				4E9DB394284A5C1E002868E4 /* InboxController.swift */,
+				4E9DB394284A5C1E002868E4 /* MessagesViewController.swift */,
 				4E9DB396284A5C1F002868E4 /* LoginViewController.swift */,
 				4E9DB395284A5C1F002868E4 /* RegisterViewController.swift */,
 				4E9DB386284A4F6D002868E4 /* WelcomeViewController.swift */,
@@ -232,7 +232,6 @@
 				4E5115EC2854507E0061988B /* MessageConfigurationController.swift */,
 				4E35AF8A286E9C3A000B4613 /* NavigationBarController.swift */,
 				4E29B8EF2882036300768D2B /* PieChartViewController.swift */,
-				4E29B8FB2882068B00768D2B /* DemoBaseViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -483,7 +482,6 @@
 				4E9EFCA2284EC79D00EABDB7 /* TabBarController.swift in Sources */,
 				4E9DB357284A3B92002868E4 /* ViewController.swift in Sources */,
 				4E9DB398284A5C1F002868E4 /* RegisterViewController.swift in Sources */,
-				4E29B8FC2882068B00768D2B /* DemoBaseViewController.swift in Sources */,
 				4E9DB387284A4F6D002868E4 /* WelcomeViewController.swift in Sources */,
 				4E9DB399284A5C1F002868E4 /* LoginViewController.swift in Sources */,
 				4E9DB3C8284A78D7002868E4 /* Message.swift in Sources */,
@@ -493,7 +491,7 @@
 				4E5115ED2854507E0061988B /* MessageConfigurationController.swift in Sources */,
 				4EC33C7528623EB100CA9965 /* MessagesMachineManager.swift in Sources */,
 				4E9DB353284A3B92002868E4 /* AppDelegate.swift in Sources */,
-				4E9DB397284A5C1F002868E4 /* InboxController.swift in Sources */,
+				4E9DB397284A5C1F002868E4 /* MessagesViewController.swift in Sources */,
 				4E9DB355284A3B92002868E4 /* SceneDelegate.swift in Sources */,
 				4E2190A3287F1BEB0038E871 /* Timers.swift in Sources */,
 				4E29B8F02882036300768D2B /* PieChartViewController.swift in Sources */,
@@ -505,6 +503,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E9DB36A284A3B97002868E4 /* MessageMachineTests.swift in Sources */,
+				4E07E66E2889B58E005C227C /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -513,6 +512,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E9DB375284A3B97002868E4 /* MessageMachineUITests.swift in Sources */,
+				4E07E66B2889B588005C227C /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -604,6 +604,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					HEADER_SEARCH_PATHS,
+					"=",
+					"\"${SRCROOT}/Pods/Firebase/CoreOnly/Sources\"",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -661,6 +666,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					HEADER_SEARCH_PATHS,
+					"=",
+					"\"${SRCROOT}/Pods/Firebase/CoreOnly/Sources\"",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;

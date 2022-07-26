@@ -15,9 +15,8 @@ class MessageConfigurationController: NavigationBarController, NavigationBarDele
     let db = Firestore.firestore()
     
     override func viewDidLoad(){
-        
-        print("MessageConfigurationController - viewDidLoad")
         super.viewDidLoad()
+        callFromMessageConfiguration = true
         tableView.dataSource = self
         tableView.delegate = self
         messagesMachineManager.messageConfigurationDelegate = self
@@ -30,12 +29,11 @@ class MessageConfigurationController: NavigationBarController, NavigationBarDele
         tableView.register(UINib(nibName: K.cellNibNameMessage, bundle: nil), forCellReuseIdentifier: K.cellIdentifier)
         
         messagesMachineManager.messageConfigurationRead()
-        
-        //searchButtons = [K.searchButtons.receiver, K.searchButtons.date, K.searchButtons.category]
         initSearchController(showSenderFilter: false)
+        
+        //accessibilityIdentifiers for UItest
+        //categoryPicker.accessibilityIdentifier = "categoryPicker"
 
-        
-        
     }
     
     //MARK: Delete Message Configuration
@@ -43,7 +41,7 @@ class MessageConfigurationController: NavigationBarController, NavigationBarDele
         print("MessageConfigurationController - deleteMessage")
 
         messagesConf.removeAll{ $0.docId == docId }
-        self.messagesMachineManager.messageConfigDelete(docId: docId)
+        self.messagesMachineManager.messageConfigurationDelete(docId: docId)
         self.messagesMachineManager.messageConfigurationRead()
     }
     
@@ -104,7 +102,6 @@ class MessageConfigurationController: NavigationBarController, NavigationBarDele
     //MARK: Filter functions
     func didUpdateFilter(_ navigationBarController: NavigationBarController) {
         print("MessageConfigurationController - didUpdateFilter")
-
         tableView.reloadData()
     }
 }
@@ -130,9 +127,6 @@ extension MessageConfigurationController: SwipeTableViewCellDelegate{
     
     
     func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
-        
-        print("MessageConfigurationController - editActionsOptionsForRowAt")
-
         
         var options = SwipeOptions()
         options.expansionStyle = .destructive

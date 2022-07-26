@@ -8,17 +8,12 @@
 import UIKit
 
 class WelcomeViewController: UIViewController {
-
-    
     
     @IBOutlet weak var titleLabel: UILabel!
-    //var timers  = [String: Timer]()
     var messagesMachineManager = MessagesMachineManager()
     
     //unwind segue for logouts across the app
     @IBAction func unwindSegue(_ sender: UIStoryboardSegue){
-        
-  
     }
     
     override func viewWillAppear(_ animated: Bool) {

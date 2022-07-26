@@ -1,9 +1,8 @@
 //
 //  RegisterViewController.swift
-//  Flash Chat iOS13
+//  MessageMachine
 //
-//  Created by Angela Yu on 21/10/2019.
-//  Copyright © 2019 Angela Yu. All rights reserved.
+//  Created by EDWAR FERNANDO MARTINEZ CASTRO on 3/06/22.
 //
 
 import UIKit
@@ -12,17 +11,20 @@ class RegisterViewController: UIViewController {
     
     @IBOutlet weak var emailTextfield: UITextField!
     @IBOutlet weak var passwordTextfield: UITextField!
+    
     @IBAction func registerPressed(_ sender: UIButton) {
-        if let email = emailTextfield.text, let password = passwordTextfield.text{
-            Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
-                if let e = error{
-                    print(e.localizedDescription)
-                } else {
-                    self.performSegue(withIdentifier: K.registerSegue, sender: self)
-                }
+        
+        guard let email = emailTextfield.text, let password = passwordTextfield.text else { return }
+        
+        Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+            guard let e = error else {
+                self.performSegue(withIdentifier: K.registerSegue, sender: self)
+                return
             }
+            print(e.localizedDescription)
         }
     }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -33,5 +35,5 @@ class RegisterViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden=false
     }
-    
 }
+

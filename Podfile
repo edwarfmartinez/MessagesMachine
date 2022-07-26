@@ -7,6 +7,7 @@ target 'MessageMachine' do
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'
   pod 'SwipeCellKit'
+  pod 'IQKeyboardManagerSwift'
 
 end
 

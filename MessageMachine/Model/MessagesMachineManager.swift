@@ -25,7 +25,6 @@ protocol DataChartDelegate {
 }
 
 
-
 class MessagesMachineManager {
     
     //MARK: Variables
@@ -37,11 +36,11 @@ class MessagesMachineManager {
     let db = Firestore.firestore()
     var firestoreListener = ListenerRegistration?.init(nilLiteral: ())
     var messages: [Message] = []
-    var messageConfiguration : [MessageConfiguration] = []
+    var messagesConfiguration : [MessageConfiguration] = []
     
     let formatter = DateFormatter()
     let searchController = UISearchController()
-   
+    var logedUser = Auth.auth().currentUser?.email
     
     //MARK: Inbox/Sent
     
@@ -62,10 +61,8 @@ class MessagesMachineManager {
                     guard let e = error else {
                         print("Message saved succesfully")
                         return }
-                    
-            print("\(K.errorMsgSavingData)\(e.localizedDescription)")
 
-                    
+            print("\(K.errorMsgSavingData)\(e.localizedDescription)")
                 }
         }
     }
@@ -73,11 +70,11 @@ class MessagesMachineManager {
     func messagesRead(fromInbox: Bool, fromCharts: Bool){
         
         firestoreListener?.remove()
-        firestoreListener = db.collection(K.FStore.Messages.collectionName).whereField(fromInbox ? K.FStore.Messages.receiverField : K.FStore.Messages.senderField, isEqualTo: Auth.auth().currentUser?.email).order(by: K.FStore.Messages.dateField).addSnapshotListener() { (querySnapshot, err) in
+        firestoreListener = db.collection(K.FStore.Messages.collectionName).whereField(fromInbox ? K.FStore.Messages.receiverField : K.FStore.Messages.senderField, isEqualTo: logedUser).order(by: K.FStore.Messages.dateField).addSnapshotListener() { (querySnapshot, err) in
             self.messages = [] // Save all messages in this variable
             
             if let err = err {
-                print("\(K.errorMsgDocuments)\(err)")
+                print("MessagesMachineManager: \(K.errorMsgDocuments)\(err)")
             } else {
                 guard let snapshotDocuments = querySnapshot?.documents else { return }
                 for doc in snapshotDocuments{
@@ -109,9 +106,9 @@ class MessagesMachineManager {
     
     //MARK: Message Configuration CRUD
     
-    func messageConfigCreateUpdate(message: MessageConfiguration){
+    func messageConfigurationCreateUpdate(message: MessageConfiguration){
         
-        db.collection(K.FStore.MessageConfiguration.collectionName).document(message.docId == "" ? generateMessageConfigId : message.docId).setData([
+        db.collection(K.FStore.MessageConfiguration.collectionName).document(message.docId == "" ? generateMessageConfigurationId : message.docId).setData([
             K.FStore.MessageConfiguration.ownerField: Auth.auth().currentUser?.email as Any,
             K.FStore.MessageConfiguration.categoryField: message.category,
             K.FStore.MessageConfiguration.frequencyField: Int(message.frequency),
@@ -124,14 +121,14 @@ class MessagesMachineManager {
                 print("\(K.errorMsgSavingData)\(e.localizedDescription)")
             } else {
                 print("messageConfigCreateUpdate succesfully")
-                self.setTimers(messages: self.messageConfiguration)
+                self.setTimers(messages: self.messagesConfiguration)
             }
         }
     }
     
     func messageConfigurationRead() {
         db.collection(K.FStore.MessageConfiguration.collectionName).whereField(K.FStore.MessageConfiguration.ownerField, isEqualTo: Auth.auth().currentUser?.email as Any).order(by: K.FStore.Messages.dateField).addSnapshotListener() { (querySnapshot, err) in
-            self.messageConfiguration = [] // Save all messages in this variable
+            self.messagesConfiguration = [] // Save all messages in this variable
             if let err = err {
                 print("\(K.errorMsgGetDocument)\(err)")
             } else {
@@ -147,15 +144,15 @@ class MessagesMachineManager {
                           let messageConfDate = data[K.FStore.MessageConfiguration.dateField] as? Double
                     else { return }
                     let newMessageConfiguration = MessageConfiguration(docId: doc.documentID, category: messageConfCategory, frequency: messageConfFrequency, message: messageConfMessage, sendTo: messageConfSendTo, date: messageConfDate)
-                    self.messageConfiguration.append(newMessageConfiguration)
+                    self.messagesConfiguration.append(newMessageConfiguration)
                 }
             }
             print("Finish read all Messages Configuration")
-            self.messageConfigurationDelegate?.didUpdateMessages(self, messages: self.messageConfiguration)
+            self.messageConfigurationDelegate?.didUpdateMessages(self, messages: self.messagesConfiguration)
         }
     }
     
-    func messageConfigDelete(docId: String){
+    func messageConfigurationDelete(docId: String){
         db.collection(K.FStore.MessageConfiguration.collectionName).document(docId).delete() { err in
             guard let err = err else {
                 self.stopSpecificTimer(timerId: docId)
@@ -167,7 +164,7 @@ class MessagesMachineManager {
     }
     
     // Creates new id for new message configuration
-    var generateMessageConfigId: String {
+    var generateMessageConfigurationId: String {
         get {
             return String((0..<K.docIdLength).map{_ in K.alphaNumericValues.randomElement()!})
         }

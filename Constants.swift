@@ -74,11 +74,11 @@ struct K {
         struct MessageConfiguration {
             static let collectionName = "messageConfiguration"
             static let categories: [Int: String] = [
-                0: "Category1",
-                1: "Category2",
-                2: "Category3",
-                3: "Category4",
-                4: "Category5"
+                0: "All the company",
+                1: "Sales team",
+                2: "Management",
+                3: "IT Team",
+                4: "House keeping"
             ]
             
             static let docIdField = "docId"
@@ -93,6 +93,14 @@ struct K {
     
     struct searchButtons {
         static let sender = "Sender"
+        static let date = "Date"
+        static let message = "Messsage"
+        static let receiver = "Receiver"
+        static let category = "Category"
+    }
+    
+    struct accessibilityIdentifiers{
+        static let messagesTableView = "MessagesTableView"
         static let date = "Date"
         static let message = "Messsage"
         static let receiver = "Receiver"
