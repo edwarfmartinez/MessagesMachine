@@ -15,4 +15,3 @@ Concepts:
 * firebase-firestore
 * MVC
 
-![ezgif com-gif-maker (3)](https://user-images.githubusercontent.com/99278919/186545258-2def57ac-6368-4983-bb2b-6a97d6684942.gif)
