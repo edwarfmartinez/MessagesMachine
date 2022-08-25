@@ -1,22 +1,18 @@
-# SpaceFlight
 
-MacOS & iOS app. Get the latest space flight news: international news, the most relevant Blogs and the daily report from NASA.
+# MessagesMachine
+
+iOS app for automated messaging. Program your automated messages including sending frequency time and receiver users, and the messages machine will do the job.
 
 Concepts:
 
-* SwiftUI
-* Catalyst project
-* Observable Object
-* Web Kit
-* Pagination
+* Serverless
+* Charts
+* Singleton
+* Protocols and delegates
 * XCTest
+* firebase-database
+* firebase-authentication
+* firebase-firestore
+* MVC
 
-# iOS Version
-
-![ezgif com-gif-maker (4)](https://user-images.githubusercontent.com/99278919/186545647-e763ee0b-d35a-4c0e-933b-d6ace1663692.gif)
-
-
-# MacOS Version
-
-![ezgif com-gif-maker (5)](https://user-images.githubusercontent.com/99278919/186546034-4cdc23a4-1869-491b-ad49-b75e85fa7ea1.gif)
-
+![ezgif com-gif-maker (3)](https://user-images.githubusercontent.com/99278919/186545258-2def57ac-6368-4983-bb2b-6a97d6684942.gif)
