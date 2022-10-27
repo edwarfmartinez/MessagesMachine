@@ -16,7 +16,7 @@ Concepts:
 
 ## Architecture Diagram
 
-![Screen Shot 2022-10-27 at 10 03 12 AM](https://user-images.githubusercontent.com/99278919/198326833-440cb261-3603-4645-af8f-2ad23a00c15c.png)
+![Screen Shot 2022-10-27 at 3 47 21 PM](https://user-images.githubusercontent.com/99278919/198394773-228004a8-4f36-496a-9417-cf14f79f4c25.png)
 
 ### 1. Register and Login
 
